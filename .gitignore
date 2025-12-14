@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.python-version
+.venv/
+.env
+.env.*
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Node/JS
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data/cache/artifacts
+cache/
+training_data/
+artifacts/**/*.pt
+artifacts/**/*.bin
+artifacts/**/*.cbm
+artifacts/**/*.pth
+artifacts/**/*.npy
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/

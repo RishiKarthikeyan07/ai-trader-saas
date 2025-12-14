@@ -1,0 +1,23 @@
+{
+  "name": "stockformer_v1",
+  "lookback": 120,
+  "ohlcv_features": 5,
+  "kronos_dim": 512,
+  "context_dim": 29,
+  "horizons": [3, 5, 10],
+  "d_model": 128,
+  "n_heads": 4,
+  "n_layers": 4,
+  "ffn_dim": 256,
+  "dropout": 0.1,
+  "pooling": "attn",
+  "use_kronos": true,
+  "use_context": true,
+  "loss": {
+    "type": "multi_task",
+    "regression": "huber",
+    "classification": "bce_logits",
+    "weights": {"reg": 0.6, "cls": 0.4},
+    "horizon_weights": [0.25, 0.35, 0.4]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "tft_v1",
+  "lookback": 120,
+  "ohlcv_features": 5,
+  "kronos_dim": 512,
+  "context_dim": 29,
+  "horizons": [3, 5, 10],
+  "hidden_size": 64,
+  "attention_heads": 4,
+  "dropout": 0.1,
+  "targets": {
+    "returns": [3, 5, 10],
+    "volatility": 10,
+    "bands": 10
+  }
+}
