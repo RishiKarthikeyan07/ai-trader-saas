@@ -27,7 +27,7 @@ def build_timeframes(symbol: str, settings: Settings) -> TimeframeSet:
 
     if hourly.empty:
         hourly = pd.DataFrame(columns=["open", "high", "low", "close", "volume"])
-    h4 = hourly.resample("4H").agg(
+    h4 = hourly.resample("4h").agg(
         {
             "open": "first",
             "high": "max",
@@ -47,7 +47,7 @@ def build_timeframes(symbol: str, settings: Settings) -> TimeframeSet:
         }
     ).dropna()
 
-    monthly = daily.resample("M").agg(
+    monthly = daily.resample("ME").agg(
         {
             "open": "first",
             "high": "max",
