@@ -20,6 +20,7 @@ Thumbs.db
 
 # Data/cache/artifacts
 cache/
+.cache/
 training_data/
 artifacts/**/*.pt
 artifacts/**/*.bin
