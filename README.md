@@ -1,9 +1,9 @@
 # AI Swing Trading SaaS (NSE) — Production-Grade, SOTA Stack
 
-Institutional-style swing trading platform for NSE with daily heavy ML (Kronos/StockFormer/TFT/CatBoost), Smart Money Concepts validation, hourly 1H/4H entry refinement (no intraday scalping), and Elite BUY-only auto execution with PPO exits (hooked). Built to scale centrally to 5,000+ users; no per-user inference.
+Institutional-style swing trading platform for NSE with daily heavy ML (Kronos/StockFormer/TFT/LightGBM-veto), Smart Money Concepts validation, hourly 1H/4H entry refinement (no intraday scalping), and Elite BUY-only auto execution with PPO exits (hooked). Built to scale centrally to 5,000+ users; no per-user inference.
 
 ## Architecture
-- **Model stack (prod):** Kronos 512d embeddings → StockFormer (direction + returns) → TFT (vol/bands) → CatBoost veto. FinRL PPO reserved for exits only.
+- **Model stack (prod):** Kronos 512d embeddings → StockFormer (direction + returns) → TFT (vol/bands) → LightGBM veto. FinRL PPO reserved for exits only.
 - **Pipelines:** Daily heavy inference; hourly light entry refinement. PKScreener only for universe reduction; SMC for feature/validation.
 - **Data:** AlphaVantage primary, yfinance fallback, bhavcopy upload. Cached to Parquet + DuckDB; aggregates to Postgres (Supabase).
 - **Backend:** FastAPI (`backend/`), model registry with MODE=stub|prod guardrails.
@@ -12,7 +12,7 @@ Institutional-style swing trading platform for NSE with daily heavy ML (Kronos/S
 ## Repo layout
 - `backend/` FastAPI app, pipelines, feature/SMC engine, model registry/loaders, DuckDB/Parquet cache
 - `frontend/` Next.js UI (dashboard, signal detail, admin triggers, elite automation controls)
-- `notebooks/` Colab training kit (dataset + Kronos embeddings, StockFormer, TFT + CatBoost)
+- `notebooks/` Colab training kit (dataset + Kronos embeddings, StockFormer, TFT + LightGBM veto)
 - `artifacts/` Model artifacts (expected layout: `artifacts/v1/...`)
 - `training_data/` Local cache for training exports (ignored in git)
 - `cache/`, `data/` Runtime stores (ignored)
@@ -34,7 +34,7 @@ Key env vars (no secrets committed): `ALPHAVANTAGE_API_KEY`, `SUPABASE_URL`, `SU
   1) PKScreener filters NSE universe
   2) Multi-timeframe builder (M/W/D/4H/1H) with Parquet/DuckDB cache
   3) TA + SMC features (BOS/CHoCH/MSS/liquidity sweeps/order blocks/FVG/premium-discount)
-  4) Model fusion (Kronos → StockFormer → TFT → CatBoost) → BUY/SELL/HOLD with entry/SL/TP/SMC flags
+  4) Model fusion (Kronos → StockFormer → TFT → LightGBM veto) → BUY/SELL/HOLD with entry/SL/TP/SMC flags
   5) Persist to DuckDB `signals`
 - **Hourly** `POST /pipeline/run-hourly`
   - Only refines existing daily signals to `READY_TO_ENTER` vs `WAIT` using 1H/4H alignment + SMC micro confirms. Never flips direction.
@@ -53,7 +53,8 @@ Key env vars (no secrets committed): `ALPHAVANTAGE_API_KEY`, `SUPABASE_URL`, `SU
 ## Training (Colab, GPU T4)
 - `notebooks/01_build_dataset_and_kronos.ipynb`: yfinance daily data → normalize + TF-align + SMC + TA + 512d Kronos embeddings → `training_data/v1/dataset.parquet`
 - `notebooks/02_train_stockformer.ipynb`: trains StockFormer (context_dim=29, Kronos=512) → `artifacts/v1/stockformer/weights.pt` + `config.json`
-- `notebooks/03_train_tft_and_veto.ipynb`: trains TFT (returns/vol/bands) and CatBoost veto → `artifacts/v1/tft/`, `artifacts/v1/veto/`
+- `notebooks/03_train_tft.ipynb`: trains TFT (returns/vol/bands) → `artifacts/v1/tft/`
+- `notebooks/04_train_lightgbm_veto.ipynb`: trains LightGBM veto → `artifacts/v1/veto/`
 Set `REPO_URL=https://github.com/RishiKarthikeyan07/ai-trader-saas` in Colab before running.
 
 ### Artifact layout (v1)
@@ -67,7 +68,7 @@ artifacts/v1/
     weights.pt
     config.json
   veto/
-    catboost.cbm
+    lightgbm.txt
     config.json
   manifest.json        # model versions, feature schema, normalization hash, data range
 ```
@@ -103,7 +104,7 @@ python -m pytest -q
 - **ModelInput:** `ohlcv_120` (120×5 float32 normalized), `kronos_emb` (512 via loader), `context` (29 = TF-align 5 + SMC 12 + TA 12)
 - **StockFormer:** returns `[3,5,10]`, up_probs `[3,5,10]`
 - **TFT:** returns `[3,5,10]`, `vol_10d`, `upper_10d`, `lower_10d`
-- **CatBoost veto:** features from SF/TFT + SMC/TF/TA summaries; thresholds block=0.65, boost=0.35
+- **LightGBM veto:** features from SF/TFT + SMC/TF/TA summaries; thresholds block=0.65, boost=0.35
 
 ## Ops checklist for prod
 - Download Kronos: `PYTHONPATH=.. python backend/scripts/download_kronos.py --dest artifacts/v1/kronos`

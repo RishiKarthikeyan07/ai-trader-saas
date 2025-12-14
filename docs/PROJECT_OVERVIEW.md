@@ -31,14 +31,14 @@ This document walks through the entire system A→Z: problem framing, data, feat
 1) **Kronos** (pretrained candle encoder) → 512-d embeddings; batched; cached per (symbol, asof).
 2) **StockFormer** (core alpha): Transformer encoder; outputs returns [3,5,10] + up_probs [3,5,10]; inputs: normalized OHLCV (120×5), Kronos emb (512), context vec (29).
 3) **TFT** (risk/range): returns [3,5,10], vol_10d, upper_10d, lower_10d; same inputs as StockFormer.
-4) **CatBoost veto**: features from StockFormer/TFT + SMC/TF/TA summaries; thresholds: block >0.65, boost <0.35.
+4) **LightGBM veto**: features from StockFormer/TFT + SMC/TF/TA summaries; thresholds: block >0.65, boost <0.35.
 5) **FinRL PPO**: exits-only (HOLD, partial exits, trail); integrated later once signals are stable.
 
 ## 6) Model IO Contracts (locked)
 - ModelInput: `ohlcv_120` (120×5 float32 normalized), `tf_align` (5), `smc_vec` (12), `ta_vec` (12), context = concat (29), raw_features for explanations.
 - StockFormer: returns `[3,5,10]`, up_probs `[3,5,10]`.
 - TFT: returns `[3,5,10]`, vol_10d, upper_10d, lower_10d.
-- CatBoost veto: veto probability using fused vector from build_veto_vec.
+- LightGBM veto: veto probability using fused vector from build_veto_vec.
 
 ## 7) Artifact Layout & Versioning
 ```
@@ -46,13 +46,13 @@ artifacts/v1/
   kronos/              # HF snapshot NeoQuasar/Kronos-base
   stockformer/         # weights.pt, config.json
   tft/                 # weights.pt, config.json
-  veto/                # catboost.cbm, config.json
+  veto/                # lightgbm.txt, config.json
   manifest.json        # model versions, feature schema, normalization hash, data range
 ```
 Prod mode requires valid paths for all artifacts; otherwise it fails fast.
 
 ## 8) Pipelines
-- **Daily** (heavy): PKScreener → multi-timeframe cache → TA+SMC → build ModelInput → Kronos → StockFormer → TFT → CatBoost veto → fusion → BUY/SELL/HOLD with entry/SL/TP/SMC flags → store signals.
+- **Daily** (heavy): PKScreener → multi-timeframe cache → TA+SMC → build ModelInput → Kronos → StockFormer → TFT → LightGBM veto → fusion → BUY/SELL/HOLD with entry/SL/TP/SMC flags → store signals.
 - **Hourly** (light): reads existing daily signals; uses 1H/4H alignment + SMC micro-confirmations to output READY_TO_ENTER vs WAIT; never flips BUY↔SELL.
 
 ## 9) Backend (FastAPI)
@@ -67,7 +67,8 @@ Prod mode requires valid paths for all artifacts; otherwise it fails fast.
 ## 11) Training (Colab T4 workflow)
 - `notebooks/01_build_dataset_and_kronos.ipynb`: yfinance → normalize → TF/SMC/TA → Kronos embeddings → `training_data/v1/dataset.parquet`.
 - `notebooks/02_train_stockformer.ipynb`: trains StockFormer with context_dim=29, Kronos 512 → saves to `artifacts/v1/stockformer/`.
-- `notebooks/03_train_tft_and_veto.ipynb`: trains TFT + CatBoost veto → saves to `artifacts/v1/tft/` and `artifacts/v1/veto/`.
+- `notebooks/03_train_tft.ipynb`: trains TFT → saves to `artifacts/v1/tft/`.
+- `notebooks/04_train_lightgbm_veto.ipynb`: trains LightGBM veto → saves to `artifacts/v1/veto/`.
 - Set `REPO_URL=https://github.com/RishiKarthikeyan07/ai-trader-saas` before running in Colab.
 
 ## 12) Guardrails & Risk Controls

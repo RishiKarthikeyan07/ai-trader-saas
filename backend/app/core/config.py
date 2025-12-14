@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     kronos_artifact_path: Path | None = Field(default=None)
     stockformer_artifact_path: Path | None = Field(default=None)
     tft_artifact_path: Path | None = Field(default=None)
-    catboost_artifact_path: Path | None = Field(default=None)
+    lightgbm_artifact_path: Path | None = Field(default=None)
     default_universe: str = "NIFTY500"
     max_daily_signals: int = 10
     max_hourly_signals: int = 50

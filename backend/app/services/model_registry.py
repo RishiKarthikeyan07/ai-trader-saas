@@ -15,9 +15,9 @@ except ImportError:  # pragma: no cover
     torch = None
 
 try:
-    import catboost
+    import lightgbm as lgb
 except ImportError:  # pragma: no cover
-    catboost = None
+    lgb = None
 
 from app.ml.stockformer.model import StockFormer
 from app.ml.tft.model import TFT
@@ -143,14 +143,16 @@ class TFTPredictor:
 
 class VetoModel:
     def __init__(self, model_path: Path):
-        if catboost is None:
-            raise ImportError("catboost is required for veto model")
-        self.model = catboost.CatBoostClassifier()
-        self.model.load_model(str(model_path))
+        if lgb is None:
+            raise ImportError("lightgbm is required for veto model")
+        self.model = lgb.Booster(model_file=str(model_path))
 
     def veto(self, features: np.ndarray) -> float:
-        prob = self.model.predict_proba(features)
-        return float(prob[0, 1])
+        features = np.asarray(features, dtype=np.float32)
+        if features.ndim == 1:
+            features = features.reshape(1, -1)
+        prob = self.model.predict(features, raw_score=False)
+        return float(prob[0])
 
 
 class ModelRegistry:
@@ -161,7 +163,7 @@ class ModelRegistry:
             "kronos": settings.kronos_artifact_path,
             "stockformer": settings.stockformer_artifact_path,
             "tft": settings.tft_artifact_path,
-            "catboost": settings.catboost_artifact_path,
+            "lightgbm": settings.lightgbm_artifact_path,
         }
         self.kronos: Optional[KronosEncoder] = None
         self.stockformer: Optional[StockFormerPredictor] = None
@@ -176,7 +178,7 @@ class ModelRegistry:
         # The following loaders assume user supplies correct checkpoints/modules.
         self.stockformer = StockFormerPredictor(self.artifacts["stockformer"], context_dim=29)
         self.tft = TFTPredictor(self.artifacts["tft"], context_dim=29)
-        self.veto_model = VetoModel(self.artifacts["catboost"])
+        self.veto_model = VetoModel(self.artifacts["lightgbm"])
 
     def ensure_ready(self) -> None:
         if self.mode != "prod":
@@ -213,7 +215,7 @@ class ModelRegistry:
             "kronos": str(self.artifacts["kronos"]),
             "stockformer": str(self.artifacts["stockformer"]),
             "tft": str(self.artifacts["tft"]),
-            "catboost": str(self.artifacts["catboost"]),
+            "lightgbm": str(self.artifacts["lightgbm"]),
         }
         return ModelOutput(
             direction_prob=direction_prob,
@@ -242,7 +244,7 @@ class ModelRegistry:
             "kronos": "v0.1-stub",
             "stockformer": "v0.1-stub",
             "tft": "v0.1-stub",
-            "catboost": "v0.1-stub",
+            "lightgbm": "v0.1-stub",
         }
         return ModelOutput(
             direction_prob=direction_prob,

@@ -28,7 +28,7 @@ export default function Home() {
           <div>
             <p className="pill" style={{ background: 'rgba(45, 212, 191, 0.18)', color: '#2dd4bf' }}>Daily institutional-grade swing signals</p>
             <h1 className="hero-title">AI swing trading desk for NSE (Monthly/Weekly/Daily + 4H/1H).</h1>
-            <p className="hero-subtitle">Daily StockFormer/TFT/CatBoost fusion for direction + returns, Smart Money Concepts validation, hourly 1H/4H entry refinement, and FinRL PPO exit management for elite automation.</p>
+            <p className="hero-subtitle">Daily StockFormer/TFT/LightGBM fusion for direction + returns, Smart Money Concepts validation, hourly 1H/4H entry refinement, and FinRL PPO exit management for elite automation.</p>
           </div>
           <div className="card" style={{ minWidth: 260 }}>
             <div style={{ fontWeight: 700, marginBottom: 8 }}>Tier access</div>
