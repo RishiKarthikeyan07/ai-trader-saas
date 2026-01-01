@@ -214,14 +214,19 @@ def build_veto_vec(
     veto_vec = np.array(features, dtype=np.float32)
 
     # Ensure we have a consistent shape
-    # Pad or trim to fixed size if needed
-    target_size = 48  # Adjust based on actual feature count
+    # Actual feature count:
+    # SF prob: 3 + SF ret: 3 + TFT ret: 3 + TFT vol_upper: 3 + TFT vol_lower: 3
+    # + agreement: 3 + confidence: 3 + MTF: 5 + SMC: 6 + TA: 6 = 38 features
+    target_size = 38  # Actual feature count
+
     if len(veto_vec) < target_size:
+        # Pad with zeros if features are missing
         veto_vec = np.pad(veto_vec, (0, target_size - len(veto_vec)), 'constant')
     elif len(veto_vec) > target_size:
+        # Trim if too many features
         veto_vec = veto_vec[:target_size]
 
-    return veto_vec.reshape(1, -1)  # (1, feature_dim)
+    return veto_vec.reshape(1, -1)  # (1, 38)
 
 
 if __name__ == "__main__":

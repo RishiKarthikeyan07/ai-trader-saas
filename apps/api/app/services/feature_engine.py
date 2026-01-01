@@ -90,8 +90,8 @@ def compute_ta_features(df: pd.DataFrame) -> pd.DataFrame:
     df['volume_sma'] = df['volume'].rolling(20).mean()
     df['volume_ratio'] = df['volume'] / (df['volume_sma'] + 1e-10)
 
-    # Fill NaN values
-    df = df.fillna(method='bfill').fillna(method='ffill').fillna(0)
+    # Fill NaN values (pandas 2.0+ compatible)
+    df = df.bfill().ffill().fillna(0)
 
     return df
 
