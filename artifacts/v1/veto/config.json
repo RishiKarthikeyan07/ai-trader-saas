@@ -1,6 +1,0 @@
-{
-  "name": "lightgbm_veto_v1",
-  "feature_vector": "build_veto_vec_v1",
-  "threshold_block": 0.65,
-  "threshold_boost": 0.35
-}

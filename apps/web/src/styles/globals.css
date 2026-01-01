@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './graphite-glass.css';
+
+@layer base {
+  :root {
+    /* Graphite Glass Theme - Dark Premium */
+    --background: 220 15% 8%;
+    --foreground: 220 8% 95%;
+
+    --card: 220 15% 11%;
+    --card-foreground: 220 8% 95%;
+
+    --popover: 220 15% 10%;
+    --popover-foreground: 220 8% 95%;
+
+    --primary: 280 75% 65%;
+    --primary-foreground: 220 8% 98%;
+
+    --secondary: 220 15% 16%;
+    --secondary-foreground: 220 8% 95%;
+
+    --muted: 220 15% 14%;
+    --muted-foreground: 220 8% 60%;
+
+    --accent: 180 65% 55%;
+    --accent-foreground: 220 8% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 220 8% 98%;
+
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 280 75% 65%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --glass-bg: rgba(20, 22, 28, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --gradient-purple: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    --gradient-cyan: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    @apply bg-card/40 backdrop-blur-xl border border-border/50;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    box-shadow:
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10;
+  }
+
+  /* Premium gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400;
+  }
+
+  /* Signal status badges */
+  .badge-ready {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+  }
+
+  .badge-wait {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20;
+  }
+
+  .badge-filled {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20;
+  }
+
+  .badge-exited {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/20;
+  }
+
+  /* Risk grade colors */
+  .risk-low {
+    @apply text-emerald-400 bg-emerald-500/10 border-emerald-500/20;
+  }
+
+  .risk-medium {
+    @apply text-amber-400 bg-amber-500/10 border-amber-500/20;
+  }
+
+  .risk-high {
+    @apply text-rose-400 bg-rose-500/10 border-rose-500/20;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+
+  /* Pro Mode Dense Panel */
+  .pro-panel {
+    @apply glass-card p-3 space-y-2;
+  }
+
+  .pro-metric {
+    @apply flex items-center justify-between text-sm;
+  }
+
+  .pro-metric-label {
+    @apply text-muted-foreground;
+  }
+
+  .pro-metric-value {
+    @apply font-semibold text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

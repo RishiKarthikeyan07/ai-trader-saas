@@ -1,0 +1,15 @@
+fastapi>=0.104.1
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+supabase>=2.0.0
+httpx>=0.25.0
+redis>=5.0.0
+rq>=1.15.0
+pandas>=2.1.0
+numpy>=1.26.0
+yfinance>=0.2.32
+ta-lib>=0.4.28
+schedule>=1.2.0
+pytz>=2023.3
+requests>=2.31.0

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoPilot - Route Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .status {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .status-item strong {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .status-item span {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .routes-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .routes-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .route-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .route-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f7f9fc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .route-item:hover {
+            background: #eef2f7;
+            transform: translateX(5px);
+        }
+
+        .route-number {
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .route-content {
+            flex: 1;
+        }
+
+        .route-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .route-url {
+            font-size: 14px;
+            color: #667eea;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .route-url:hover {
+            text-decoration: underline;
+        }
+
+        .route-desc {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .admin-section {
+            border-left-color: #f59e0b;
+        }
+
+        .admin-section h2 {
+            border-bottom-color: #f59e0b;
+        }
+
+        .admin-section .route-item {
+            border-left-color: #f59e0b;
+        }
+
+        .admin-section .route-number {
+            background: #f59e0b;
+        }
+
+        .admin-section .route-url {
+            color: #f59e0b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .test-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .test-button:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AutoPilot Trading Bot</h1>
+            <p>Route Tester & Navigation Guide</p>
+        </div>
+
+        <div class="status">
+            <h3>System Status</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <strong>Frontend</strong>
+                    <span>✅ Running</span>
+                </div>
+                <div class="status-item">
+                    <strong>Backend</strong>
+                    <span>✅ Running</span>
+                </div>
+                <div class="status-item">
+                    <strong>Frontend Port</strong>
+                    <span>3000</span>
+                </div>
+                <div class="status-item">
+                    <strong>Backend Port</strong>
+                    <span>8000</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="routes-section">
+            <h2>📱 User Routes (AutoPilot Features)</h2>
+            <div class="route-grid">
+                <div class="route-item">
+                    <div class="route-number">1</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Home / Dashboard
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/home" target="_blank" class="route-url">
+                            http://localhost:3000/home
+                        </a>
+                        <div class="route-desc">
+                            AutoPilot toggle, live positions, 3D OpportunityRadar, daily P&L
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/home')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">2</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Broker Connections
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/broker" target="_blank" class="route-url">
+                            http://localhost:3000/broker
+                        </a>
+                        <div class="route-desc">
+                            Connect to 7 Indian brokers (Zerodha, Angel One, Upstox, IIFL, 5Paisa, Fyers, Dhan)
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/broker')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">3</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Portfolio
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/portfolio" target="_blank" class="route-url">
+                            http://localhost:3000/portfolio
+                        </a>
+                        <div class="route-desc">
+                            Live positions, entry/current prices, unrealized P&L, real-time updates
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/portfolio')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">4</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Orders
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/orders" target="_blank" class="route-url">
+                            http://localhost:3000/orders
+                        </a>
+                        <div class="route-desc">
+                            Order history, status tracking, fill details
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/orders')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">5</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Risk Management
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/risk" target="_blank" class="route-url">
+                            http://localhost:3000/risk
+                        </a>
+                        <div class="route-desc">
+                            Position limits, max drawdown, daily loss limits, portfolio heat
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/risk')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">6</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Performance Analytics
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:3000/performance" target="_blank" class="route-url">
+                            http://localhost:3000/performance
+                        </a>
+                        <div class="route-desc">
+                            Daily P&L chart, win rate, Sharpe ratio, max drawdown
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/performance')">Test</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="routes-section admin-section">
+            <h2>🔐 Admin Routes</h2>
+            <div class="route-grid">
+                <div class="route-item">
+                    <div class="route-number">1</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Admin Dashboard
+                            <span class="badge badge-warning">ADMIN</span>
+                        </div>
+                        <a href="http://localhost:3000/admin/dashboard" target="_blank" class="route-url">
+                            http://localhost:3000/admin/dashboard
+                        </a>
+                        <div class="route-desc">
+                            Trigger Daily Brain, Executor, Global Kill Switch, system metrics
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/admin/dashboard')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">2</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            User Management
+                            <span class="badge badge-warning">ADMIN</span>
+                        </div>
+                        <a href="http://localhost:3000/admin/users" target="_blank" class="route-url">
+                            http://localhost:3000/admin/users
+                        </a>
+                        <div class="route-desc">
+                            All users, subscription status, AutoPilot status, broker connections
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/admin/users')">Test</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">3</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Trade Intentions (INTERNAL)
+                            <span class="badge badge-danger">ADMIN-ONLY</span>
+                        </div>
+                        <a href="http://localhost:3000/admin/intentions" target="_blank" class="route-url">
+                            http://localhost:3000/admin/intentions
+                        </a>
+                        <div class="route-desc">
+                            ⚠️ AI-generated signals - NEVER exposed to users
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testRoute('/admin/intentions')">Test</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="routes-section">
+            <h2>🌐 Backend API</h2>
+            <div class="route-grid">
+                <div class="route-item">
+                    <div class="route-number">1</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            API Documentation
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:8000/docs" target="_blank" class="route-url">
+                            http://localhost:8000/docs
+                        </a>
+                        <div class="route-desc">
+                            Interactive API documentation (Swagger UI)
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="window.open('http://localhost:8000/docs', '_blank')">Open</button>
+                </div>
+
+                <div class="route-item">
+                    <div class="route-number">2</div>
+                    <div class="route-content">
+                        <div class="route-title">
+                            Health Check
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <a href="http://localhost:8000/health" target="_blank" class="route-url">
+                            http://localhost:8000/health
+                        </a>
+                        <div class="route-desc">
+                            API health status and version info
+                        </div>
+                    </div>
+                    <button class="test-button" onclick="testBackend()">Test</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>AutoPilot Trading Bot v2.0.0-beta</p>
+            <p>All systems operational ✅</p>
+        </div>
+    </div>
+
+    <script>
+        function testRoute(path) {
+            window.open('http://localhost:3000' + path, '_blank');
+        }
+
+        async function testBackend() {
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                alert('✅ Backend is healthy!\n\n' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                alert('❌ Backend connection failed!\n\n' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
