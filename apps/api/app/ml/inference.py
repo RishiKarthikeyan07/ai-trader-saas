@@ -1,6 +1,13 @@
 """
 Model Inference Module for AI Trader
 
+⚠️ DEPRECATED for Deep Learning models (StockFormer, TFT)
+Use deep_inference.py instead for PyTorch models.
+
+This module is kept ONLY for sklearn/LightGBM model compatibility.
+For production inference with StockFormer/TFT, use:
+    from app.ml.deep_inference import DeepModelInference
+
 Handles loading trained models and running predictions.
 """
 
